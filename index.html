@@ -1,0 +1,1054 @@
+<index.html>
+<html lang="es" class="dark scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prototipo Académico de Oximetría - CUN</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- KaTeX for Mathematical Formulas -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body);"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            cyan: '#00f0ff',
+                            red: '#ff2a5f',
+                            ir: '#9333ea',
+                            dark: '#070a13',
+                            card: '#111827',
+                            cardGlow: '#1f2937',
+                            border: '#1e293b'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body {
+            background-color: #070a13;
+            color: #f1f5f9;
+            font-family: 'Inter', sans-serif;
+        }
+        .glass-panel {
+            background: rgba(17, 24, 39, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .glass-panel-glow {
+            background: rgba(17, 24, 39, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(0, 240, 255, 0.25);
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.08);
+        }
+        .lcd-display {
+            background-color: #121e0d;
+            color: #10b981;
+            font-family: 'JetBrains Mono', monospace;
+            border: 4px solid #1f2937;
+            box-shadow: inset 0 0 10px rgba(16, 185, 129, 0.2);
+            text-shadow: 0 0 5px rgba(16, 185, 129, 0.8);
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #070a13; }
+        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #00f0ff; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col antialiased selection:bg-brand-cyan selection:text-slate-950">
+
+    <header class="fixed top-0 left-0 right-0 z-50 glass-panel border-b border-slate-800/80">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo -->
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-cyan to-blue-600 flex items-center justify-center text-slate-950 font-bold text-xl shadow-lg shadow-cyan-500/20">
+                        <i class="fa-solid fa-heart-pulse text-white"></i>
+                    </div>
+                    <div>
+                        <span class="font-extrabold text-lg tracking-tight text-white">OxiMax Nano</span>
+                        <span class="text-[10px] text-brand-cyan font-mono block -mt-1">PROTOTIPO CUN • INGENIERÍA DE SISTEMAS</span>
+                    </div>
+                </div>
+
+                <!-- Navigation Links -->
+                <nav class="hidden lg:flex space-x-6 text-xs font-semibold tracking-wider uppercase">
+                    <a href="#summary" class="hover:text-brand-cyan transition-colors">Resumen</a>
+                    <a href="#objectives" class="hover:text-brand-cyan transition-colors">Objetivos</a>
+                    <a href="#physics" class="hover:text-brand-cyan transition-colors">Marco Teórico</a>
+                    <a href="#simulator" class="text-brand-cyan font-bold flex items-center gap-1"><i class="fa-solid fa-bolt"></i> Simulador Live</a>
+                    <a href="#calculator" class="hover:text-brand-cyan transition-colors">Calculadora R</a>
+                    <a href="#hardware" class="hover:text-brand-cyan transition-colors">Hardware</a>
+                    <a href="#timeline" class="hover:text-brand-cyan transition-colors">Cronograma</a>
+                </nav>
+
+                <!-- Phone CTA -->
+                <div class="hidden sm:flex items-center space-x-3">
+                    <a href="tel:3213896407" class="px-3.5 py-1.5 rounded-lg bg-brand-cyan/10 text-brand-cyan border border-brand-cyan/30 hover:bg-brand-cyan hover:text-slate-950 font-mono font-bold text-xs tracking-wider transition-all flex items-center gap-2">
+                        <i class="fa-solid fa-phone"></i> 321 389 6407
+                    </a>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <button id="mobile-btn" class="lg:hidden text-slate-300 hover:text-white p-2">
+                    <i class="fa-solid fa-bars text-xl"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Dropdown -->
+        <div id="mobile-menu" class="hidden lg:hidden glass-panel border-b border-slate-800 px-4 pt-2 pb-4 space-y-2 text-sm">
+            <a href="#summary" class="block px-3 py-2 rounded-md hover:bg-slate-800">Resumen e Introducción</a>
+            <a href="#objectives" class="block px-3 py-2 rounded-md hover:bg-slate-800">Objetivos del Proyecto</a>
+            <a href="#physics" class="block px-3 py-2 rounded-md hover:bg-slate-800">Principios Ópticos & Math</a>
+            <a href="#simulator" class="block px-3 py-2 rounded-md text-brand-cyan font-bold hover:bg-slate-800">Simulador de Onda PPG</a>
+            <a href="#calculator" class="block px-3 py-2 rounded-md hover:bg-slate-800">Calculadora de Coeficiente R</a>
+            <a href="#hardware" class="block px-3 py-2 rounded-md hover:bg-slate-800">Arquitectura de Hardware</a>
+            <a href="#timeline" class="block px-3 py-2 rounded-md hover:bg-slate-800">Cronograma de Entrega</a>
+            <a href="tel:3213896407" class="block text-center px-4 py-2 mt-2 rounded-lg bg-brand-cyan text-slate-950 font-bold">
+                <i class="fa-solid fa-phone mr-2"></i> Contacto: 321 389 6407
+            </a>
+        </div>
+    </header>
+
+    <section class="pt-28 pb-16 relative overflow-hidden">
+        <div class="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-brand-cyan/10 rounded-full blur-[140px] pointer-events-none"></div>
+        <div class="absolute top-1/4 right-10 w-[300px] h-[300px] bg-brand-red/10 rounded-full blur-[100px] pointer-events-none"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center max-w-4xl mx-auto space-y-6">
+                
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full glass-panel border border-brand-cyan/30 text-brand-cyan text-xs font-mono uppercase tracking-widest">
+                    <i class="fa-solid fa-graduation-cap"></i> Proyecto de Grado Universitario • CUN 2026
+                </div>
+
+                <h1 class="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-tight">
+                    Diseño y Desarrollo de un Prototipo Académico de <span class="bg-clip-text text-transparent bg-gradient-to-r from-brand-cyan via-blue-400 to-brand-red">Oximetría de Pulso</span>
+                </h1>
+
+                <p class="text-slate-300 text-sm sm:text-base font-light max-w-3xl mx-auto leading-relaxed">
+                    Monitoreo en tiempo real de la Saturación de Oxígeno Periférico ($SpO_2$) y Frecuencia Cardíaca ($BPM$) mediante fotopletismografía ($PPG$) basada en la plataforma <strong class="text-white">Arduino Nano</strong> y el sensor óptico <strong class="text-brand-cyan">MAX30100</strong>.
+                </p>
+
+                <!-- Authors & Academic Info Box -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-6 text-left">
+                    <div class="glass-panel p-4 rounded-xl border-l-4 border-l-brand-cyan">
+                        <div class="text-[10px] text-slate-400 font-mono uppercase">Autores del Proyecto</div>
+                        <div class="text-xs font-bold text-white mt-1 space-y-0.5">
+                            <p><i class="fa-solid fa-user text-brand-cyan mr-1.5"></i> Juan Sebastian Mahecha Mancera</p>
+                            <p><i class="fa-solid fa-user text-brand-cyan mr-1.5"></i> Jhon Sebastian Paez Garavito</p>
+                            <p><i class="fa-solid fa-user text-brand-cyan mr-1.5"></i> Mateo Olmos Duran</p>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel p-4 rounded-xl border-l-4 border-l-blue-500">
+                        <div class="text-[10px] text-slate-400 font-mono uppercase">Institución & Programa</div>
+                        <div class="text-xs font-bold text-white mt-1">
+                            <p><i class="fa-solid fa-university text-blue-400 mr-1.5"></i> Corporación Unificada Nacional de Educación Superior (CUN)</p>
+                            <p class="text-slate-400 text-[11px] font-mono mt-1">Ingeniería de Sistemas • Sede G,J</p>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel p-4 rounded-xl border-l-4 border-l-purple-500">
+                        <div class="text-[10px] text-slate-400 font-mono uppercase">Tutor / Docente Guía</div>
+                        <div class="text-xs font-bold text-white mt-1">
+                            <p><i class="fa-solid fa-user-tie text-purple-400 mr-1.5"></i> Jorge Alberto Bernal</p>
+                            <p class="text-slate-400 text-[11px] font-mono mt-1">Fecha: 5 de Septiembre de 2026</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex flex-wrap items-center justify-center gap-4 pt-4">
+                    <a href="#simulator" class="px-6 py-3 rounded-xl bg-gradient-to-r from-brand-cyan to-blue-600 text-slate-950 font-bold text-xs uppercase tracking-wider hover:shadow-lg hover:shadow-cyan-500/25 transition-all flex items-center gap-2">
+                        <i class="fa-solid fa-play"></i> Probar Simulador En Vivo
+                    </a>
+                    <a href="https://wa.me/573213896407" target="_blank" class="px-6 py-3 rounded-xl glass-panel text-emerald-400 border border-emerald-500/30 hover:bg-emerald-500/10 font-mono font-bold text-xs tracking-wider transition-all flex items-center gap-2">
+                        <i class="fa-brands fa-whatsapp text-base"></i> Contacto: 3213896407
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <section id="summary" class="py-16 bg-slate-950/60 border-y border-slate-800/80">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+                
+                <div class="lg:col-span-7 space-y-6">
+                    <div>
+                        <span class="text-xs font-mono text-brand-cyan uppercase tracking-widest block mb-1">Caja Negra Pedagogía</span>
+                        <h2 class="text-2xl sm:text-3xl font-bold text-white">Resumen e Importancia Educativa</h2>
+                    </div>
+
+                    <p class="text-slate-300 text-sm leading-relaxed">
+                        A pesar de la alta disponibilidad de oxímetros de pulso comerciales en el mercado, el funcionamiento interno de estos aparatos suele ser tratado como un concepto de <strong class="text-brand-cyan">"caja negra"</strong> en entornos educativos. Los algoritmos de filtrado, el procesamiento matemático de las ondas ópticas y el diseño de la arquitectura de hardware subyacente raramente se abordan en profundidad.
+                    </p>
+
+                    <p class="text-slate-300 text-sm leading-relaxed">
+                        Con el fin de cerrar esta brecha pedagógica, este proyecto demuestra empíricamente cómo las matemáticas y la programación actúan como el puente indispensable para traducir variables biológicas complejas en datos digitales de utilidad analítica, previniendo afecciones críticas como la <strong class="text-brand-red">hipoxemia</strong>.
+                    </p>
+
+                    <!-- Clinical Thresholds Grid -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4">
+                        <div class="bg-slate-900/80 p-4 rounded-xl border border-slate-800">
+                            <div class="text-xs text-slate-400 font-mono">Adulto General Saludable</div>
+                            <div class="text-xl font-bold text-emerald-400 font-mono mt-1">95% – 100%</div>
+                            <div class="text-[10px] text-slate-500 mt-1">Rango normal estándar a nivel del mar.</div>
+                        </div>
+
+                        <div class="bg-slate-900/80 p-4 rounded-xl border border-slate-800">
+                            <div class="text-xs text-slate-400 font-mono">Adultos Mayores (>65 años)</div>
+                            <div class="text-xl font-bold text-amber-400 font-mono mt-1">94% – 98%</div>
+                            <div class="text-[10px] text-slate-500 mt-1">Descenso por pérdida de elasticidad pulmonar.</div>
+                        </div>
+
+                        <div class="bg-slate-900/80 p-4 rounded-xl border border-slate-800">
+                            <div class="text-xs text-slate-400 font-mono">Pacientes con EPOC</div>
+                            <div class="text-xl font-bold text-brand-cyan font-mono mt-1">88% – 92%</div>
+                            <div class="text-[10px] text-slate-500 mt-1">Umbral basal adaptativo compensado.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Simulated LCD Display Mockup -->
+                <div class="lg:col-span-5 flex justify-center">
+                    <div class="w-full max-w-sm glass-panel p-6 rounded-2xl relative">
+                        <div class="text-xs font-mono text-slate-400 mb-3 flex items-center justify-between">
+                            <span>PROTOTIPO LCD 16x2 I2C</span>
+                            <span class="text-emerald-400 animate-pulse">● VCC 5V</span>
+                        </div>
+
+                        <!-- LCD Visual Box -->
+                        <div class="lcd-display p-4 rounded-lg text-sm space-y-2">
+                            <div class="flex justify-between items-center border-b border-emerald-900/60 pb-1">
+                                <span>SpO2: <strong id="lcd-spo2" class="text-lg">98</strong>%</span>
+                                <span>BPM: <strong id="lcd-bpm" class="text-lg">75</strong></span>
+                            </div>
+                            <div class="text-xs font-mono flex justify-between text-emerald-300/80">
+                                <span>STATUS: OK</span>
+                                <span>R: 0.75</span>
+                            </div>
+                            <div class="text-[10px] text-emerald-500 font-mono text-center pt-1 border-t border-emerald-950">
+                                CUN • ARDUINO NANO
+                            </div>
+                        </div>
+
+                        <div class="mt-4 text-xs text-slate-400 space-y-1.5 font-mono">
+                            <div class="flex justify-between"><span>Sensor Óptico:</span> <span class="text-white">MAX30100 (660/905nm)</span></div>
+                            <div class="flex justify-between"><span>Microcontrolador:</span> <span class="text-white">ATmega328P @ 16MHz</span></div>
+                            <div class="flex justify-between"><span>Comunicación:</span> <span class="text-brand-cyan">I2C (SDA A4 / SCL A5)</span></div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <section id="objectives" class="py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-12">
+                <span class="text-xs font-mono text-brand-cyan uppercase tracking-widest block mb-1">Alcance Académico</span>
+                <h2 class="text-3xl font-bold text-white">Objetivos del Proyecto</h2>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+                
+                <!-- General Objective -->
+                <div class="lg:col-span-5 glass-panel p-8 rounded-2xl border-l-4 border-l-brand-cyan flex flex-col justify-between">
+                    <div>
+                        <div class="w-12 h-12 rounded-xl bg-brand-cyan/10 text-brand-cyan flex items-center justify-center text-2xl mb-4">
+                            <i class="fa-solid fa-bullseye"></i>
+                        </div>
+                        <span class="text-xs font-mono text-brand-cyan uppercase tracking-widest font-bold">Objetivo General</span>
+                        <h3 class="text-xl font-bold text-white mt-2 mb-4">Diseñar, construir e implementar el prototipo</h3>
+                        <p class="text-slate-300 text-sm leading-relaxed">
+                            Diseñar, construir e implementar un prototipo académico de oxímetro de pulso y monitor de frecuencia cardíaca de bajo costo, mediante la integración de la plataforma <strong class="text-white">Arduino Nano</strong> y el sensor óptico <strong class="text-brand-cyan">MAX30100</strong>, para analizar de manera práctica y experimental la transformación de variables biológicas en datos digitales mediante el procesamiento de señales ópticas.
+                        </p>
+                    </div>
+                    <div class="mt-6 pt-4 border-t border-slate-800 text-xs font-mono text-slate-400">
+                        Proyecto de Grado • CUN Ingeniería de Sistemas
+                    </div>
+                </div>
+
+                <!-- Specific Objectives -->
+                <div class="lg:col-span-7 glass-panel p-8 rounded-2xl space-y-4">
+                    <span class="text-xs font-mono text-purple-400 uppercase tracking-widest font-bold block mb-2">Objetivos Específicos</span>
+
+                    <div class="space-y-3">
+                        <div class="flex items-start gap-3 p-3 rounded-xl bg-slate-900/60 border border-slate-800">
+                            <span class="w-6 h-6 rounded-full bg-brand-cyan/20 text-brand-cyan text-xs flex items-center justify-center shrink-0 font-bold font-mono">1</span>
+                            <p class="text-xs text-slate-300"><strong class="text-white">Ensamblar la arquitectura física:</strong> Establecer la interfaz de conexión eléctrica entre Arduino Nano, sensor MAX30100 y pantalla LCD.</p>
+                        </div>
+
+                        <div class="flex items-start gap-3 p-3 rounded-xl bg-slate-900/60 border border-slate-800">
+                            <span class="w-6 h-6 rounded-full bg-brand-cyan/20 text-brand-cyan text-xs flex items-center justify-center shrink-0 font-bold font-mono">2</span>
+                            <p class="text-xs text-slate-300"><strong class="text-white">Adquirir señales ópticas:</strong> Capturar la transmitancia de la luz roja e infrarroja que atraviesa el tejido arterial de la yema del dedo.</p>
+                        </div>
+
+                        <div class="flex items-start gap-3 p-3 rounded-xl bg-slate-900/60 border border-slate-800">
+                            <span class="w-6 h-6 rounded-full bg-brand-cyan/20 text-brand-cyan text-xs flex items-center justify-center shrink-0 font-bold font-mono">3</span>
+                            <p class="text-xs text-slate-300"><strong class="text-white">Procesamiento de Señal PPG:</strong> Implementar algoritmos C++ para separar las componentes estática ($DC$) y pulsátil ($AC$).</p>
+                        </div>
+
+                        <div class="flex items-start gap-3 p-3 rounded-xl bg-slate-900/60 border border-slate-800">
+                            <span class="w-6 h-6 rounded-full bg-brand-cyan/20 text-brand-cyan text-xs flex items-center justify-center shrink-0 font-bold font-mono">4</span>
+                            <p class="text-xs text-slate-300"><strong class="text-white">Cálculo de $Ratio\ of\ Ratios\ (R)$:</strong> Normalizar relaciones ópticas y aplicar ecuaciones para estimar $SpO_2$.</p>
+                        </div>
+
+                        <div class="flex items-start gap-3 p-3 rounded-xl bg-slate-900/60 border border-slate-800">
+                            <span class="w-6 h-6 rounded-full bg-brand-cyan/20 text-brand-cyan text-xs flex items-center justify-center shrink-0 font-bold font-mono">5</span>
+                            <p class="text-xs text-slate-300"><strong class="text-white">Determinación de BPM:</strong> Medir el intervalo de tiempo preciso ($T$) entre picos sistólicos sucesivos ($BPM = 60/T$).</p>
+                        </div>
+
+                        <div class="flex items-start gap-3 p-3 rounded-xl bg-slate-900/60 border border-slate-800">
+                            <span class="w-6 h-6 rounded-full bg-brand-cyan/20 text-brand-cyan text-xs flex items-center justify-center shrink-0 font-bold font-mono">6</span>
+                            <p class="text-xs text-slate-300"><strong class="text-white">Evaluación de Limitaciones:</strong> Analizar factores de interferencia como movimiento, esmalte, temperatura y melanina.</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <section id="physics" class="py-16 bg-slate-950/80 border-t border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <span class="text-xs font-mono text-brand-cyan uppercase tracking-widest block mb-1">Fundamentos Físico-Matemáticos</span>
+                <h2 class="text-3xl font-bold text-white">Ley de Beer-Lambert y Algoritmo PPG</h2>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                
+                <!-- Optical Wavelengths Card -->
+                <div class="glass-panel p-6 rounded-2xl space-y-4">
+                    <div class="w-10 h-10 rounded-lg bg-red-500/10 text-brand-red flex items-center justify-center text-xl font-bold font-mono">
+                        660/905
+                    </div>
+                    <h3 class="text-lg font-bold text-white">Espectrofotometría MAX30100</h3>
+                    <p class="text-xs text-slate-300 leading-relaxed">
+                        El sensor integrado MAX30100 emite dos longitudes de onda optimizadas:
+                    </p>
+                    <ul class="text-xs text-slate-300 space-y-2 font-mono">
+                        <li class="p-2 rounded bg-slate-900/80 border-l-2 border-l-brand-red">
+                            <strong class="text-brand-red">LED Rojo (660 nm):</strong> Mayor absorción por Hemoglobina Desoxigenada ($Hb$).
+                        </li>
+                        <li class="p-2 rounded bg-slate-900/80 border-l-2 border-l-purple-500">
+                            <strong class="text-purple-400">LED IR (905 nm):</strong> Mayor absorción por Oxihemoglobina ($HbO_2$).
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Mathematical Formulas Card -->
+                <div class="glass-panel p-6 rounded-2xl space-y-4">
+                    <div class="w-10 h-10 rounded-lg bg-blue-500/10 text-blue-400 flex items-center justify-center text-xl font-bold">
+                        <i class="fa-solid fa-calculator"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-white">Algoritmo Ratio of Ratios ($R$)</h3>
+                    <p class="text-xs text-slate-300 leading-relaxed">
+                        La relación adimensional de absorción óptica se calcula dividiendo la componente pulsátil ($AC$) sobre la estática ($DC$):
+                    </p>
+                    <div class="bg-slate-950 p-3 rounded-lg border border-slate-800 text-center font-mono text-xs text-brand-cyan">
+                        $$R = \frac{AC_{roja} / DC_{roja}}{AC_{IR} / DC_{IR}}$$
+                    </div>
+                    <div class="text-[11px] text-slate-400 leading-relaxed">
+                        Ejemplo del documento: Si $AC_{roja}=120, DC_{roja}=4000$ (relación $0.03$) y $AC_{IR}=200, DC_{IR}=5000$ (relación $0.04$), entonces $$R = \frac{0.03}{0.04} = 0.75$$
+                    </div>
+                </div>
+
+                <!-- Beer Lambert Law Card -->
+                <div class="glass-panel p-6 rounded-2xl space-y-4">
+                    <div class="w-10 h-10 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-xl font-bold">
+                        <i class="fa-solid fa-square-root-variable"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-white">Ley de Beer-Lambert</h3>
+                    <p class="text-xs text-slate-300 leading-relaxed">
+                        Modelado teórico de atenuación lumínica a través del medio tisular:
+                    </p>
+                    <div class="bg-slate-950 p-3 rounded-lg border border-slate-800 text-center font-mono text-xs text-emerald-400">
+                        $$I = I_0 \cdot e^{-\epsilon \cdot c \cdot L}$$
+                    </div>
+                    <p class="text-[11px] text-slate-400 leading-relaxed">
+                        Donde $I$ es luz transmitida, $I_0$ luz incidente, $\epsilon$ coeficiente de extinción, $c$ concentración y $L$ espesor óptico. Requiere calibración empírica por dispersión fotónica tisular.
+                    </p>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <section id="simulator" class="py-16 bg-slate-950 border-y border-slate-800/80 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-10">
+                <span class="text-xs font-mono text-brand-cyan uppercase tracking-widest block mb-1">Entorno Interactivo en Tiempo Real</span>
+                <h2 class="text-3xl font-bold text-white">Simulador de Fotopletismografía ($PPG$)</h2>
+                <p class="text-xs sm:text-sm text-slate-400 mt-2">
+                    Ajuste los controles del paciente para observar la onda pulsátil $AC/DC$ y aplique factores de interferencia clínica.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                
+                <!-- Simulator Control Sidebar -->
+                <div class="lg:col-span-4 glass-panel p-6 rounded-2xl space-y-6">
+                    <h3 class="text-sm font-bold text-white uppercase tracking-wider font-mono flex items-center gap-2">
+                        <i class="fa-solid fa-sliders text-brand-cyan"></i> Parámetros de Simulación
+                    </h3>
+
+                    <!-- BPM Slider -->
+                    <div>
+                        <div class="flex justify-between text-xs font-mono mb-2">
+                            <span class="text-slate-300">Frecuencia ($BPM$):</span>
+                            <span id="simBpmVal" class="text-brand-cyan font-bold">75 BPM</span>
+                        </div>
+                        <input id="simBpmSlider" type="range" min="40" max="160" value="75" class="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-brand-cyan">
+                        <div class="flex justify-between text-[10px] text-slate-500 font-mono mt-1">
+                            <span>40</span>
+                            <span>75 Normal</span>
+                            <span>160 Taquicardia</span>
+                        </div>
+                    </div>
+
+                    <!-- SpO2 Slider -->
+                    <div>
+                        <div class="flex justify-between text-xs font-mono mb-2">
+                            <span class="text-slate-300">Saturación ($SpO_2$):</span>
+                            <span id="simSpo2Val" class="text-brand-cyan font-bold">98%</span>
+                        </div>
+                        <input id="simSpo2Slider" type="range" min="80" max="100" value="98" class="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-brand-cyan">
+                        <div class="flex justify-between text-[10px] text-slate-500 font-mono mt-1">
+                            <span>80% Hipoxia</span>
+                            <span>90% Alerta</span>
+                            <span>100% Optimo</span>
+                        </div>
+                    </div>
+
+                    <!-- Clinical Disturbances Checkboxes -->
+                    <div class="space-y-2 pt-2 border-t border-slate-800">
+                        <span class="text-xs font-mono text-slate-400 block mb-2">Factores de Interferencia Clínica:</span>
+
+                        <label class="flex items-center justify-between p-2.5 rounded-lg bg-slate-900/80 border border-slate-800 text-xs cursor-pointer hover:border-slate-700">
+                            <span class="text-slate-300"><i class="fa-solid fa-snowflake text-cyan-400 mr-2"></i> Vasoconstricción por Frío</span>
+                            <input id="checkCold" type="checkbox" class="accent-brand-cyan">
+                        </label>
+
+                        <label class="flex items-center justify-between p-2.5 rounded-lg bg-slate-900/80 border border-slate-800 text-xs cursor-pointer hover:border-slate-700">
+                            <span class="text-slate-300"><i class="fa-solid fa-[#9333ea] fa-paint-roller text-purple-400 mr-2"></i> Esmalte Oscuro de Uñas</span>
+                            <input id="checkNail" type="checkbox" class="accent-brand-cyan">
+                        </label>
+
+                        <label class="flex items-center justify-between p-2.5 rounded-lg bg-slate-900/80 border border-slate-800 text-xs cursor-pointer hover:border-slate-700">
+                            <span class="text-slate-300"><i class="fa-solid fa-hand-shake text-amber-400 mr-2"></i> Artefacto por Movimiento</span>
+                            <input id="checkMotion" type="checkbox" class="accent-brand-cyan">
+                        </label>
+
+                        <label class="flex items-center justify-between p-2.5 rounded-lg bg-slate-900/80 border border-slate-800 text-xs cursor-pointer hover:border-slate-700">
+                            <span class="text-slate-300"><i class="fa-solid fa-circle text-stone-400 mr-2"></i> Elevada Melanina (Piel)</span>
+                            <input id="checkMelanin" type="checkbox" class="accent-brand-cyan">
+                        </label>
+                    </div>
+
+                    <!-- Sensor Finger Placement Button -->
+                    <button id="toggleFingerBtn" class="w-full py-2.5 rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 text-xs font-bold font-mono hover:bg-emerald-500/30 transition-all">
+                        <i class="fa-solid fa-fingerprint mr-1"></i> DEDO COLOCADO EN SENSOR
+                    </button>
+                </div>
+
+                <!-- Main Canvas & Signal Readout -->
+                <div class="lg:col-span-8 flex flex-col space-y-4">
+                    
+                    <div class="glass-panel p-4 rounded-2xl flex-1 flex flex-col">
+                        <div class="flex justify-between items-center mb-3">
+                            <div class="text-xs font-mono text-slate-300 flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full bg-brand-cyan animate-ping"></span> OSCILOSCOPIO PPG DUAL CANAL
+                            </div>
+                            <div class="flex gap-4 text-[10px] font-mono">
+                                <span class="text-brand-red flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-brand-red inline-block"></span> Canal Rojo (660nm)</span>
+                                <span class="text-purple-400 flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-purple-500 inline-block"></span> Canal IR (905nm)</span>
+                            </div>
+                        </div>
+
+                        <!-- Canvas Display Area -->
+                        <div class="relative flex-1 bg-black rounded-xl border border-slate-800 min-h-[260px] overflow-hidden">
+                            <!-- Canvas background grid lines -->
+                            <div class="absolute inset-0 opacity-15 pointer-events-none" 
+                                style="background-image: linear-gradient(#00f0ff 1px, transparent 1px), linear-gradient(90deg, #00f0ff 1px, transparent 1px); background-size: 24px 24px;"></div>
+                            
+                            <canvas id="ppgCanvas" class="w-full h-full block relative z-10"></canvas>
+
+                            <!-- Sensor Empty Overlay -->
+                            <div id="noFingerMsg" class="hidden absolute inset-0 bg-slate-950/90 z-20 flex flex-col items-center justify-center text-center p-4">
+                                <i class="fa-solid fa-hand-pointer text-amber-400 text-3xl mb-2 animate-bounce"></i>
+                                <span class="text-sm font-bold text-white font-mono">SENSOR MAX30100 VACÍO</span>
+                                <span class="text-xs text-slate-400 mt-1">Coloque la yema del dedo sobre el diodo para iniciar lectura.</span>
+                            </div>
+                        </div>
+
+                        <!-- Mathematical Live Variables Readout -->
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4 text-xs font-mono">
+                            <div class="bg-slate-900/90 p-2.5 rounded-lg border border-slate-800">
+                                <span class="text-slate-500 block text-[10px]">TIEMPO R-R ($T$)</span>
+                                <span id="outT" class="text-white font-bold text-sm">0.80 s</span>
+                            </div>
+
+                            <div class="bg-slate-900/90 p-2.5 rounded-lg border border-slate-800">
+                                <span class="text-slate-500 block text-[10px]">$AC_{roja} / DC_{roja}$</span>
+                                <span id="outRedRatio" class="text-brand-red font-bold text-sm">0.030</span>
+                            </div>
+
+                            <div class="bg-slate-900/90 p-2.5 rounded-lg border border-slate-800">
+                                <span class="text-slate-500 block text-[10px]">$AC_{IR} / DC_{IR}$</span>
+                                <span id="outIrRatio" class="text-purple-400 font-bold text-sm">0.040</span>
+                            </div>
+
+                            <div class="bg-slate-900/90 p-2.5 rounded-lg border border-slate-800">
+                                <span class="text-slate-500 block text-[10px]">COEFICIENTE $R$</span>
+                                <span id="outRVal" class="text-brand-cyan font-bold text-sm">0.750</span>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <section id="calculator" class="py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="glass-panel-glow p-8 rounded-3xl max-w-4xl mx-auto">
+                
+                <div class="text-center mb-8">
+                    <span class="text-xs font-mono text-brand-cyan uppercase tracking-widest block mb-1">Calculadora Algorítmica</span>
+                    <h2 class="text-2xl font-bold text-white">Calculadora del Coeficiente Ratio of Ratios ($R$)</h2>
+                    <p class="text-xs text-slate-400 mt-1">
+                        Ingrese los valores discretos de las componentes $AC$ y $DC$ para determinar la saturación $SpO_2$ según la calibración del prototipo.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    
+                    <!-- Channel Red Inputs -->
+                    <div class="bg-slate-900/90 p-5 rounded-2xl border border-slate-800 space-y-4">
+                        <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+                            <span class="text-xs font-bold text-brand-red font-mono"><i class="fa-solid fa-lightbulb"></i> CANAL ROJO (660 nm)</span>
+                            <span class="text-[10px] text-slate-500 font-mono">Absorción Hb</span>
+                        </div>
+
+                        <div>
+                            <label for="inputAcRed" class="block text-xs text-slate-400 font-mono mb-1">Componente Pulsátil ($AC_{roja}$):</label>
+                            <input id="inputAcRed" type="number" value="120" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm font-mono text-white focus:outline-none focus:border-brand-cyan">
+                        </div>
+
+                        <div>
+                            <label for="inputDcRed" class="block text-xs text-slate-400 font-mono mb-1">Nivel Estático Promedio ($DC_{roja}$):</label>
+                            <input id="inputDcRed" type="number" value="4000" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm font-mono text-white focus:outline-none focus:border-brand-cyan">
+                        </div>
+
+                        <div class="text-xs font-mono text-slate-400 pt-2 flex justify-between border-t border-slate-800/60">
+                            <span>Relación Normalizada:</span>
+                            <span id="calcRedNorm" class="text-brand-red font-bold">0.0300</span>
+                        </div>
+                    </div>
+
+                    <!-- Channel IR Inputs -->
+                    <div class="bg-slate-900/90 p-5 rounded-2xl border border-slate-800 space-y-4">
+                        <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+                            <span class="text-xs font-bold text-purple-400 font-mono"><i class="fa-solid fa-lightbulb"></i> CANAL INFRARROJO (905 nm)</span>
+                            <span class="text-[10px] text-slate-500 font-mono">Absorción HbO2</span>
+                        </div>
+
+                        <div>
+                            <label for="inputAcIr" class="block text-xs text-slate-400 font-mono mb-1">Componente Pulsátil ($AC_{IR}$):</label>
+                            <input id="inputAcIr" type="number" value="200" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm font-mono text-white focus:outline-none focus:border-brand-cyan">
+                        </div>
+
+                        <div>
+                            <label for="inputDcIr" class="block text-xs text-slate-400 font-mono mb-1">Nivel Estático Promedio ($DC_{IR}$):</label>
+                            <input id="inputDcIr" type="number" value="5000" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm font-mono text-white focus:outline-none focus:border-brand-cyan">
+                        </div>
+
+                        <div class="text-xs font-mono text-slate-400 pt-2 flex justify-between border-t border-slate-800/60">
+                            <span>Relación Normalizada:</span>
+                            <span id="calcIrNorm" class="text-purple-400 font-bold">0.0400</span>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Calculator Output Display -->
+                <div class="mt-6 p-6 bg-slate-950 rounded-2xl border border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-6 text-center sm:text-left">
+                    <div>
+                        <span class="text-xs font-mono text-slate-400 block">EVALUACIÓN DEL COEFICIENTE $R$</span>
+                        <div class="text-3xl font-extrabold font-mono text-brand-cyan mt-1" id="calcRResult">R = 0.750</div>
+                        <span class="text-[11px] text-slate-400 mt-1 block font-mono">$R = (120/4000) / (200/5000) = 0.03 / 0.04$</span>
+                    </div>
+
+                    <div class="sm:text-right border-t sm:border-t-0 sm:border-l border-slate-800 pt-4 sm:pt-0 sm:pl-8 w-full sm:w-auto">
+                        <span class="text-xs font-mono text-slate-400 block">SATURACIÓN DE OXÍGENO ESTIMADA</span>
+                        <div class="text-3xl font-extrabold font-mono text-emerald-400 mt-1" id="calcSpo2Result">SpO2 = 98.2%</div>
+                        <span class="text-[10px] text-emerald-500 font-mono mt-1 block">RANGO CLÍNICO NORMAL</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <section id="hardware" class="py-16 bg-slate-950/80 border-t border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <span class="text-xs font-mono text-brand-cyan uppercase tracking-widest block mb-1">Integración de Componentes</span>
+                <h2 class="text-3xl font-bold text-white">Arquitectura de Hardware y Solución CH340G</h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+                
+                <!-- Component 1: Arduino Nano -->
+                <div class="glass-panel p-6 rounded-2xl space-y-4">
+                    <div class="w-12 h-12 rounded-xl bg-cyan-500/10 text-brand-cyan flex items-center justify-center text-2xl">
+                        <i class="fa-solid fa-microchip"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-white">Arduino Nano V3.0</h3>
+                    <ul class="text-xs font-mono text-slate-300 space-y-2">
+                        <li class="flex justify-between border-b border-slate-800 pb-1"><span>Microcontrolador:</span> <span class="text-white">ATmega328P</span></li>
+                        <li class="flex justify-between border-b border-slate-800 pb-1"><span>Velocidad Reloj:</span> <span class="text-white">16 MHz</span></li>
+                        <li class="flex justify-between border-b border-slate-800 pb-1"><span>Memoria Flash:</span> <span class="text-white">32 KB</span></li>
+                        <li class="flex justify-between border-b border-slate-800 pb-1"><span>Memoria SRAM:</span> <span class="text-white">2 KB</span></li>
+                        <li class="flex justify-between"><span>ADC Interno:</span> <span class="text-brand-cyan">10-bit (8 canales)</span></li>
+                    </ul>
+                </div>
+
+                <!-- Component 2: MAX30100 -->
+                <div class="glass-panel p-6 rounded-2xl space-y-4">
+                    <div class="w-12 h-12 rounded-xl bg-red-500/10 text-brand-red flex items-center justify-center text-2xl">
+                        <i class="fa-solid fa-heart-pulse"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-white">Sensor MAX30100</h3>
+                    <ul class="text-xs font-mono text-slate-300 space-y-2">
+                        <li class="flex justify-between border-b border-slate-800 pb-1"><span>LED Rojo Peak:</span> <span class="text-brand-red">660 nm (±3nm)</span></li>
+                        <li class="flex justify-between border-b border-slate-800 pb-1"><span>LED IR Peak:</span> <span class="text-purple-400">905 nm (±5nm)</span></li>
+                        <li class="flex justify-between border-b border-slate-800 pb-1"><span>Fotodetector:</span> <span class="text-white">Alta Sensibilidad</span></li>
+                        <li class="flex justify-between"><span>Bus Digital:</span> <span class="text-brand-cyan">I2C (0x57)</span></li>
+                    </ul>
+                </div>
+
+                <!-- Component 3: LCD Display -->
+                <div class="glass-panel p-6 rounded-2xl space-y-4">
+                    <div class="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-2xl">
+                        <i class="fa-solid fa-tv"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-white">Pantalla LCD 16x2 I2C</h3>
+                    <ul class="text-xs font-mono text-slate-300 space-y-2">
+                        <li class="flex justify-between border-b border-slate-800 pb-1"><span>Formato:</span> <span class="text-white">16 Caracteres x 2 Filas</span></li>
+                        <li class="flex justify-between border-b border-slate-800 pb-1"><span>Módulo Interfaz:</span> <span class="text-white">PCF8574 I2C</span></li>
+                        <li class="flex justify-between border-b border-slate-800 pb-1"><span>Alimentación:</span> <span class="text-white">5V DC</span></li>
+                        <li class="flex justify-between"><span>Dirección I2C:</span> <span class="text-brand-cyan">0x27 / 0x3F</span></li>
+                    </ul>
+                </div>
+
+            </div>
+
+            <!-- Hardware Troubleshooting Box CH340G -->
+            <div class="glass-panel-glow p-6 rounded-2xl border-l-4 border-l-amber-500">
+                <div class="flex items-start gap-4">
+                    <div class="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center text-xl shrink-0 font-bold">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                    </div>
+                    <div class="space-y-2">
+                        <h4 class="text-base font-bold text-white">Nota de Configuración: Chip CH340G y Error 'avrdude'</h4>
+                        <p class="text-xs text-slate-300 leading-relaxed">
+                            En tarjetas genéricas de Arduino Nano, el conversor USB-Serie se reemplaza por el integrado <strong class="text-white">CH340G</strong> (Nanjing Qinheng Microelectronics). Requiere la instalación previa del controlador <code class="bg-slate-900 text-amber-300 px-1.5 py-0.5 rounded font-mono">CH341SER</code>.
+                        </p>
+                        <p class="text-xs text-slate-300 leading-relaxed">
+                            Para corregir fallos de carga del sketch tipo <code class="bg-slate-900 text-red-400 px-1.5 py-0.5 rounded font-mono">avrdude: stk500_getsync()</code> en el entorno Arduino IDE, debe seleccionarse el procesador: <strong class="text-brand-cyan font-mono">Tools > Processor > ATmega328P (Old Bootloader)</strong>.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <section class="py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-12">
+                <span class="text-xs font-mono text-brand-red uppercase tracking-widest block mb-1">Advertencia de Seguridad</span>
+                <h2 class="text-3xl font-bold text-white">Limitaciones Técnicas y Factores de Interferencia</h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                
+                <div class="glass-panel p-5 rounded-xl space-y-2 border-t-2 border-t-brand-red">
+                    <div class="text-xs font-bold text-white flex items-center gap-2"><i class="fa-solid fa-paint-roller text-purple-400"></i> Esmaltes de Uñas Oscuros</div>
+                    <p class="text-xs text-slate-400 leading-relaxed">Pigmentos negros o azules absorben radiación en 660/905nm bloqueando el haz lumínico hacia el fotodetector.</p>
+                </div>
+
+                <div class="glass-panel p-5 rounded-xl space-y-2 border-t-2 border-t-brand-cyan">
+                    <div class="text-xs font-bold text-white flex items-center gap-2"><i class="fa-solid fa-snowflake text-cyan-400"></i> Vasoconstricción por Frío</div>
+                    <p class="text-xs text-slate-400 leading-relaxed">Temperaturas bajas restringen la irrigación vascular periférica disminuyendo drásticamente la amplitud $AC$.</p>
+                </div>
+
+                <div class="glass-panel p-5 rounded-xl space-y-2 border-t-2 border-t-amber-500">
+                    <div class="text-xs font-bold text-white flex items-center gap-2"><i class="fa-solid fa-hand-shake text-amber-400"></i> Artefactos de Movimiento</div>
+                    <p class="text-xs text-slate-400 leading-relaxed">Desplazamientos del dedo inducen modulaciones falsas de mayor amplitud que el pulso arterial sistólico.</p>
+                </div>
+
+                <div class="glass-panel p-5 rounded-xl space-y-2 border-t-2 border-t-stone-400">
+                    <div class="text-xs font-bold text-white flex items-center gap-2"><i class="fa-solid fa-circle text-stone-400"></i> Melanina Epidérmica</div>
+                    <p class="text-xs text-slate-400 leading-relaxed">Niveles elevados de pigmentación absorben luz incidente generando sesgos sistemáticos informados por FDA.</p>
+                </div>
+
+                <div class="glass-panel p-5 rounded-xl space-y-2 border-t-2 border-t-red-600">
+                    <div class="text-xs font-bold text-white flex items-center gap-2"><i class="fa-solid fa-droplet text-red-500"></i> Anemia y Choque Hemodinámico</div>
+                    <p class="text-xs text-slate-400 leading-relaxed">Concentraciones muy bajas de hemoglobina impiden variaciones de absorbancia confiables en capilares.</p>
+                </div>
+
+                <div class="glass-panel p-5 rounded-xl space-y-2 border-t-2 border-t-emerald-500">
+                    <div class="text-xs font-bold text-white flex items-center gap-2"><i class="fa-solid fa-shield-halved text-emerald-400"></i> Nota Ética Aclaratoria</div>
+                    <p class="text-xs text-slate-400 leading-relaxed">Prototipo estrictamente académico de investigación. Prohibido su uso como instrumento diagnóstico clínico.</p>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <section id="timeline" class="py-16 bg-slate-950/80 border-t border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <span class="text-xs font-mono text-brand-cyan uppercase tracking-widest block mb-1">Planificación Temporal</span>
+                <h2 class="text-3xl font-bold text-white">Cronograma de Actividades (2026)</h2>
+            </div>
+
+            <div class="max-w-4xl mx-auto relative border-l-2 border-slate-800 pl-6 sm:pl-8 space-y-8">
+                
+                <!-- Timeline Item 1 -->
+                <div class="relative">
+                    <span class="absolute -left-[31px] sm:-left-[39px] top-1.5 w-4 h-4 rounded-full bg-brand-cyan border-4 border-slate-950"></span>
+                    <div class="glass-panel p-5 rounded-xl">
+                        <span class="text-xs font-mono text-brand-cyan font-bold">10 DE SEPTIEMBRE DE 2026</span>
+                        <h4 class="text-base font-bold text-white mt-1">Entrega de Proyecto y Verificación de Código</h4>
+                        <p class="text-xs text-slate-400 mt-1">Verificación inicial del sketch en C++ y entorno de simulación previo al montaje.</p>
+                    </div>
+                </div>
+
+                <!-- Timeline Item 2 -->
+                <div class="relative">
+                    <span class="absolute -left-[31px] sm:-left-[39px] top-1.5 w-4 h-4 rounded-full bg-blue-500 border-4 border-slate-950"></span>
+                    <div class="glass-panel p-5 rounded-xl">
+                        <span class="text-xs font-mono text-blue-400 font-bold">19 DE SEPTIEMBRE DE 2026</span>
+                        <h4 class="text-base font-bold text-white mt-1">Simulación del Montaje y Tomas de Pulsación</h4>
+                        <p class="text-xs text-slate-400 mt-1">Ejecución de las primeras lecturas de pulso y verificación de lógica matemática.</p>
+                    </div>
+                </div>
+
+                <!-- Timeline Item 3 -->
+                <div class="relative">
+                    <span class="absolute -left-[31px] sm:-left-[39px] top-1.5 w-4 h-4 rounded-full bg-purple-500 border-4 border-slate-950"></span>
+                    <div class="glass-panel p-5 rounded-xl">
+                        <span class="text-xs font-mono text-purple-400 font-bold">24 DE SEPTIEMBRE DE 2026</span>
+                        <h4 class="text-base font-bold text-white mt-1">Ensamble Físico del Prototipo</h4>
+                        <p class="text-xs text-slate-400 mt-1">Integración de hardware: Arduino Nano, LCD I2C y MAX30100 con código C++ en Visual Studio Code.</p>
+                    </div>
+                </div>
+
+                <!-- Timeline Item 4 -->
+                <div class="relative">
+                    <span class="absolute -left-[31px] sm:-left-[39px] top-1.5 w-4 h-4 rounded-full bg-amber-500 border-4 border-slate-950"></span>
+                    <div class="glass-panel p-5 rounded-xl">
+                        <span class="text-xs font-mono text-amber-400 font-bold">08 DE OCTUBRE DE 2026</span>
+                        <h4 class="text-base font-bold text-white mt-1">Prueba y Error sobre Montaje</h4>
+                        <p class="text-xs text-slate-400 mt-1">Calibración experimental de lecturas del sensor y ajuste de filtros de ruido.</p>
+                    </div>
+                </div>
+
+                <!-- Timeline Item 5 -->
+                <div class="relative">
+                    <span class="absolute -left-[31px] sm:-left-[39px] top-1.5 w-4 h-4 rounded-full bg-emerald-500 border-4 border-slate-950"></span>
+                    <div class="glass-panel p-5 rounded-xl border-l-4 border-l-emerald-500">
+                        <span class="text-xs font-mono text-emerald-400 font-bold">22 DE OCTUBRE DE 2026</span>
+                        <h4 class="text-base font-bold text-white mt-1">Rectificación y Entrega Final</h4>
+                        <p class="text-xs text-slate-400 mt-1">Incorporación del feedback realizado por la docente guía y sustentación final del proyecto.</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <footer id="contact" class="py-12 bg-slate-950 border-t border-slate-900 text-xs text-slate-400">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-6">
+                
+                <div class="text-center md:text-left space-y-1">
+                    <div class="text-white font-bold text-sm">Corporación Unificada Nacional de Educación Superior (CUN)</div>
+                    <p>Ingeniería de Sistemas • Proyecto de Grado 2026</p>
+                    <p class="text-slate-500 text-[11px]">Autores: Juan Sebastian Mahecha, Jhon Sebastian Paez, Mateo Olmos Duran</p>
+                </div>
+
+                <div class="flex flex-col sm:flex-row items-center gap-4">
+                    <a href="tel:3213896407" class="px-4 py-2 rounded-xl bg-slate-900 border border-slate-800 hover:border-brand-cyan text-white font-mono text-xs flex items-center gap-2">
+                        <i class="fa-solid fa-phone text-brand-cyan"></i> 321 389 6407
+                    </a>
+                    <a href="https://wa.me/573213896407" target="_blank" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center gap-2">
+                        <i class="fa-brands fa-whatsapp text-sm"></i> WhatsApp
+                    </a>
+                </div>
+
+            </div>
+            
+            <div class="mt-8 pt-6 border-t border-slate-900 text-center text-[11px] text-slate-600">
+                &copy; 2026 Prototipo Académico de Oximetría de Pulso. Todos los derechos reservados.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // DOM Elements for Canvas Simulator
+        const ppgCanvas = document.getElementById('ppgCanvas');
+        const ppgCtx = ppgCanvas.getContext('2d');
+        const simBpmSlider = document.getElementById('simBpmSlider');
+        const simSpo2Slider = document.getElementById('simSpo2Slider');
+        const simBpmVal = document.getElementById('simBpmVal');
+        const simSpo2Val = document.getElementById('simSpo2Val');
+
+        const checkCold = document.getElementById('checkCold');
+        const checkNail = document.getElementById('checkNail');
+        const checkMotion = document.getElementById('checkMotion');
+        const checkMelanin = document.getElementById('checkMelanin');
+        const toggleFingerBtn = document.getElementById('toggleFingerBtn');
+        const noFingerMsg = document.getElementById('noFingerMsg');
+
+        // Live Readouts
+        const outT = document.getElementById('outT');
+        const outRedRatio = document.getElementById('outRedRatio');
+        const outIrRatio = document.getElementById('outIrRatio');
+        const outRVal = document.getElementById('outRVal');
+
+        const lcdSpo2 = document.getElementById('lcd-spo2');
+        const lcdBpm = document.getElementById('lcd-bpm');
+
+        // State variables
+        let hasFinger = true;
+        let bpm = 75;
+        let spo2 = 98;
+        let simTime = 0;
+        let redPoints = [];
+        let irPoints = [];
+        const maxPoints = 250;
+
+        // Mobile Menu Navigation
+        document.getElementById('mobile-btn').addEventListener('click', () => {
+            document.getElementById('mobile-menu').classList.toggle('hidden');
+        });
+
+        // Event Listeners for Simulator Controls
+        simBpmSlider.addEventListener('input', (e) => {
+            bpm = parseInt(e.target.value);
+            simBpmVal.textContent = `${bpm} BPM`;
+            lcdBpm.textContent = bpm;
+            updateCalculatedValues();
+        });
+
+        simSpo2Slider.addEventListener('input', (e) => {
+            spo2 = parseInt(e.target.value);
+            simSpo2Val.textContent = `${spo2}%`;
+            lcdSpo2.textContent = spo2;
+            updateCalculatedValues();
+        });
+
+        [checkCold, checkNail, checkMotion, checkMelanin].forEach(el => {
+            el.addEventListener('change', updateCalculatedValues);
+        });
+
+        toggleFingerBtn.addEventListener('click', () => {
+            hasFinger = !hasFinger;
+            if (hasFinger) {
+                toggleFingerBtn.className = "w-full py-2.5 rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 text-xs font-bold font-mono hover:bg-emerald-500/30 transition-all";
+                toggleFingerBtn.innerHTML = '<i class="fa-solid fa-fingerprint mr-1"></i> DEDO COLOCADO EN SENSOR';
+                noFingerMsg.classList.add('hidden');
+            } else {
+                toggleFingerBtn.className = "w-full py-2.5 rounded-xl bg-amber-500/20 text-amber-400 border border-amber-500/40 text-xs font-bold font-mono hover:bg-amber-500/30 transition-all";
+                toggleFingerBtn.innerHTML = '<i class="fa-solid fa-hand-pointer mr-1"></i> SENSOR VACÍO (PRESIONE PARA DEDO)';
+                noFingerMsg.classList.remove('hidden');
+            }
+        });
+
+        function updateCalculatedValues() {
+            // T = 60 / BPM
+            const periodT = (60 / bpm).toFixed(2);
+            outT.textContent = `${periodT} s`;
+
+            // SpO2 approx: R = (110 - SpO2) / 25
+            let rVal = (110 - spo2) / 25;
+
+            // Apply disturbances
+            if (checkCold.checked) rVal *= 1.25; // Cold reduces AC, skews R
+            if (checkNail.checked) rVal *= 1.40; // Nail polish blocks red photodiode
+            if (checkMelanin.checked) rVal *= 1.10;
+
+            outRedRatio.textContent = (0.03 * (rVal / 0.75)).toFixed(3);
+            outIrRatio.textContent = (0.04).toFixed(3);
+            outRVal.textContent = rVal.toFixed(3);
+        }
+
+        // Canvas Resize
+        function resizeCanvas() {
+            if (ppgCanvas.parentElement) {
+                ppgCanvas.width = ppgCanvas.parentElement.clientWidth;
+                ppgCanvas.height = ppgCanvas.parentElement.clientHeight;
+            }
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        // Wave generator with Systolic and Dicrotic notches
+        function getPPGWave(t, heartRate) {
+            const freq = heartRate / 60;
+            const phase = (t * freq) % 1;
+
+            if (phase < 0.22) {
+                return Math.sin((phase / 0.22) * Math.PI);
+            } else if (phase >= 0.22 && phase < 0.42) {
+                const subPhase = (phase - 0.22) / 0.20;
+                return 0.35 * Math.sin(subPhase * Math.PI);
+            } else {
+                return 0;
+            }
+        }
+
+        // Oscilloscope Animation Loop
+        function animateOscilloscope() {
+            simTime += 0.016;
+
+            if (hasFinger) {
+                const isMotion = checkMotion.checked;
+                const noise = isMotion ? (Math.random() - 0.5) * 0.8 : (Math.random() - 0.5) * 0.05;
+
+                let wave = getPPGWave(simTime, bpm);
+                if (checkCold.checked) wave *= 0.4; // Cold attenuation
+                if (checkNail.checked) wave *= 0.2; // Nail polish attenuation
+
+                const redAmp = wave * (0.8 + (100 - spo2) * 0.01) + noise;
+                const irAmp = wave * 1.0 + noise;
+
+                redPoints.push(redAmp);
+                irPoints.push(irAmp);
+            } else {
+                redPoints.push(0);
+                irPoints.push(0);
+            }
+
+            if (redPoints.length > maxPoints) redPoints.shift();
+            if (irPoints.length > maxPoints) irPoints.shift();
+
+            drawOscilloscope();
+            requestAnimationFrame(animateOscilloscope);
+        }
+
+        function drawOscilloscope() {
+            const width = ppgCanvas.width;
+            const height = ppgCanvas.height;
+            const midY = height / 2;
+
+            ppgCtx.clearRect(0, 0, width, height);
+            if (redPoints.length < 2) return;
+
+            const step = width / maxPoints;
+
+            // Draw Red Line
+            ppgCtx.beginPath();
+            ppgCtx.strokeStyle = '#ff2a5f';
+            ppgCtx.lineWidth = 2;
+            for (let i = 0; i < redPoints.length; i++) {
+                const x = i * step;
+                const y = midY - (redPoints[i] * (height * 0.35));
+                if (i === 0) ppgCtx.moveTo(x, y);
+                else ppgCtx.lineTo(x, y);
+            }
+            ppgCtx.stroke();
+
+            // Draw IR Line
+            ppgCtx.beginPath();
+            ppgCtx.strokeStyle = '#a855f7';
+            ppgCtx.lineWidth = 2;
+            for (let i = 0; i < irPoints.length; i++) {
+                const x = i * step;
+                const y = midY - (irPoints[i] * (height * 0.35));
+                if (i === 0) ppgCtx.moveTo(x, y);
+                else ppgCtx.lineTo(x, y);
+            }
+            ppgCtx.stroke();
+        }
+
+        // Interactive R Calculator Logic
+        const inputAcRed = document.getElementById('inputAcRed');
+        const inputDcRed = document.getElementById('inputDcRed');
+        const inputAcIr = document.getElementById('inputAcIr');
+        const inputDcIr = document.getElementById('inputDcIr');
+
+        const calcRedNorm = document.getElementById('calcRedNorm');
+        const calcIrNorm = document.getElementById('calcIrNorm');
+        const calcRResult = document.getElementById('calcRResult');
+        const calcSpo2Result = document.getElementById('calcSpo2Result');
+
+        function calculateCustomR() {
+            const acRed = parseFloat(inputAcRed.value) || 0;
+            const dcRed = parseFloat(inputDcRed.value) || 1;
+            const acIr = parseFloat(inputAcIr.value) || 0;
+            const dcIr = parseFloat(inputDcIr.value) || 1;
+
+            const normRed = acRed / dcRed;
+            const normIr = acIr / dcIr;
+
+            calcRedNorm.textContent = normRed.toFixed(4);
+            calcIrNorm.textContent = normIr.toFixed(4);
+
+            if (normIr > 0) {
+                const rVal = normRed / normIr;
+                calcRResult.textContent = `R = ${rVal.toFixed(3)}`;
+
+                // SpO2 empirical formula approximation
+                const estimatedSpo2 = Math.min(100, Math.max(70, 110 - (25 * rVal)));
+                calcSpo2Result.textContent = `SpO2 = ${estimatedSpo2.toFixed(1)}%`;
+            } else {
+                calcRResult.textContent = "R = --";
+                calcSpo2Result.textContent = "SpO2 = --";
+            }
+        }
+
+        [inputAcRed, inputDcRed, inputAcIr, inputDcIr].forEach(input => {
+            input.addEventListener('input', calculateCustomR);
+        });
+
+        // Initialize on Load
+        window.onload = function() {
+            resizeCanvas();
+            updateCalculatedValues();
+            calculateCustomR();
+            animateOscilloscope();
+        };
